@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Mesa extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['nombre', 'status', 'mesero_id'];
+
+    public function mesero()
+    {
+        return $this->belongsTo(Mesero::class);
+    }
+
+    public function pedidos()
+    {
+        return $this->hasMany(Pedido::class);
+    }
+}
