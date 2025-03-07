@@ -1,11 +1,15 @@
 <?php
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Mesa;
 use App\Models\Mesero;
 use App\Models\Pedido;
 use App\Models\DetallePedido;
+use App\Models\Producto;
+
+
 
 class ControlVistas extends Controller{
 
@@ -14,12 +18,28 @@ class ControlVistas extends Controller{
         $mesas = Mesa::with('mesero')->get();
         return view('mesas', ['mesas' => $mesas]); 
     }
-
-    public function vistaMenu(){
-        // Para el formulario de nueva orden, obtenemos las mesas y meseros activos
-        $mesas = Mesa::all();
-        $meseros = Mesero::all();
-        return view('menu', ['mesas' => $mesas, 'meseros' => $meseros]); 
+    
+    public function vistaMenu()
+    {
+        // Verificar si el mesero está autenticado
+        if (Auth::guard('mesero')->check()) {
+            $mesero = Auth::guard('mesero')->user();
+    
+            // Obtener todas las categorías únicas
+            $categorias = Producto::select('categoria')->distinct()->get();
+    
+            // Obtener productos organizados por categoría
+            $productos = Producto::all();
+    
+            // Obtener todas las mesas
+            $mesas = Mesa::all();
+    
+            // Pasar las variables a la vista
+            return view('menu', compact('categorias', 'productos', 'mesas', 'mesero'));
+        } else {
+            // El mesero no está autenticado, redirige al login
+            return redirect()->route('mesero.login');
+        }
     }
 
     public function guardarOrden(Request $request){

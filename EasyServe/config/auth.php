@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'mesero' => [
+            'driver' => 'session', // Usa sesiones para la autenticación
+            'provider' => 'meseros', // Define el proveedor de autenticación
+        ],
     ],
 
     /*
@@ -65,10 +70,10 @@ return [
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'meseros' => [
+            'driver' => 'eloquent', // Usa Eloquent para manejar la autenticación
+            'model' => App\Models\Mesero::class, // Modelo que representa a los meseros
+        ],
     ],
 
     /*
@@ -93,6 +98,13 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'meseros' => [
+            'provider' => 'meseros', // Usa el provider 'meseros'
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,
