@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -8,32 +9,28 @@ use Illuminate\Support\Facades\Auth;
 
 class MeseroAuthController extends Controller
 {
-    // Mostrar el formulario de login
+    // Mostrar formulario de inicio de sesión para meseros
     public function showLoginForm()
     {
-        return view('mesero.login'); // Vista del formulario de login
+        return view('auth.mesero_login');
     }
 
-    // Procesar el login
+    // Procesar el inicio de sesión para meseros
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'id' => 'required|numeric', // El ID debe ser numérico
-            'password' => 'required|string', // La contraseña es obligatoria
-        ]);
+        $credentials = $request->only('nombre', 'password');
 
         if (Auth::guard('mesero')->attempt($credentials)) {
-            return redirect()->route('menu'); // Redirigir al menú después del login
+            return redirect()->route('menu');
         }
 
-        return back()->withErrors(['id' => 'Credenciales incorrectas']);
+        return back()->withErrors(['nombre' => 'Credenciales incorrectas.']);
     }
 
-    // Cerrar sesión
+    // Cerrar sesión para meseros
     public function logout(Request $request)
     {
         Auth::guard('mesero')->logout();
-        $request->session()->invalidate();
-        return redirect('/mesero/login');
+        return redirect()->route('inicio');
     }
 }

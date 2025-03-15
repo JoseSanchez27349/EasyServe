@@ -92,51 +92,77 @@ class ControlVistas extends Controller{
         $meseros = Mesero::all(); // Obtener todos los meseros
         return view('mesero', compact('meseros'));
     }
+    public function vistaAdminDashboard()
+    {
+        return view('admin.dashboard'); // Asegúrate de que esta vista exista
+    }
 
     // Agregar un nuevo mesero
     public function agregarMesero(Request $request)
-    {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-        ]);
+{
+    // Validar los datos del formulario
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'password' => 'required|string|min:8', 
+    ]);
 
-        $mesero = new Mesero();
-        $mesero->nombre = $request->nombre;
-        $mesero->save();
+    // Crear un nuevo mesero
+    $mesero = new Mesero();
+    $mesero->nombre = $request->nombre;
+    $mesero->password = bcrypt($request->password); // Hasheo de la contraseña
+    $mesero->save();
 
-        return redirect()->route('mesero')->with('success', 'Mesero agregado con éxito');
-    }
+    return redirect()->route('mesero')->with('success', 'Mesero agregado con éxito');
+}
+public function mostrarFormularioAgregar()
+{
+    return view('agregar_mesero'); // Renderiza la vista del formulario
+}
 
     // Editar un mesero
     public function editarMesero($id)
-    {
-        $mesero = Mesero::findOrFail($id);
-        return view('editar_mesero', compact('mesero'));
-    }
+{
+    $mesero = Mesero::findOrFail($id); // Obtén el mesero por su ID
+    return view('editar_mesero', compact('mesero')); // Pasa la variable $mesero a la vista
+}
+    
 
+    
     // Actualizar un mesero
     public function actualizarMesero(Request $request, $id)
-    {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-        ]);
+{
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'password' => 'nullable|string|min:8', // La contraseña es opcional
+    ]);
 
-        $mesero = Mesero::findOrFail($id);
-        $mesero->nombre = $request->nombre;
-        $mesero->save();
+    $mesero = Mesero::findOrFail($id);
+    $mesero->nombre = $request->nombre;
 
-        return redirect()->route('mesero')->with('success', 'Mesero actualizado con éxito');
+    // Actualiza la contraseña solo si se proporciona
+    if ($request->filled('password')) {
+        $mesero->password = bcrypt($request->password);
     }
+
+    $mesero->save();
+
+    return redirect()->route('mesero')->with('success', 'Mesero actualizado con éxito');
+}
 
     // Eliminar un mesero
     public function eliminarMesero($id)
-    {
-        $mesero = Mesero::findOrFail($id);
-        $mesero->delete();
+{
+    $mesero = Mesero::findOrFail($id);
+    $mesero->delete();
 
-        return redirect()->route('mesero')->with('success', 'Mesero eliminado con éxito');
-    }
+    return redirect()->route('mesero')->with('success', 'Mesero eliminado con éxito');
+}
 
+public function index()
+{
+    $meseros = Mesero::all(); // Obtén todos los meseros
+    return view('mesero', compact('meseros')); // Pasa la variable $meseros a la vista
+}
     //cierre vistas mesero
 
     public function vistaInicio(){
